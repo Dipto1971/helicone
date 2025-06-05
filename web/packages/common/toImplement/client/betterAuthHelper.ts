@@ -96,7 +96,21 @@ export const heliconeAuthClientFromSession = (
     },
 
     async signInWithOAuth(params): Promise<Result<void, string>> {
-      throw new Error("Not implemented");
+      try {
+        const result = await authClient.signIn.social({
+          provider: params.provider,
+          callbackURL: params.options?.redirectTo || window.location.origin,
+        });
+        
+        if (result.error) {
+          return err(result.error.message || "OAuth sign in failed");
+        }
+        
+        return ok(undefined);
+      } catch (error: any) {
+        console.error("Better Auth OAuth sign in error:", error);
+        return err(error.message || "OAuth sign in failed");
+      }
     },
 
     async resetPassword(params): Promise<Result<void, string>> {
